@@ -5,8 +5,6 @@ services:
     depends_on:
       curation.postgres:
         condition: service_healthy
-#      curation.opensearch:
-#        condition: service_healthy
 
     container_name: agr.stage.curation.api.server
     image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:production
