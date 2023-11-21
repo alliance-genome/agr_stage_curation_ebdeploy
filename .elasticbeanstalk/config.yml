@@ -1,8 +1,9 @@
 branch-defaults:
   main:
-    environment: stage-neo4j
+    environment: stage-curation
+    group_suffix: null
 global:
-  application_name: neo4j-server
+  application_name: curation-server
   branch: null
   default_ec2_keyname: null
   default_platform: Docker

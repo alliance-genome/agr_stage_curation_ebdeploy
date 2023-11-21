@@ -1,0 +1,57 @@
+version: "3.2"
+
+services:
+  curation.api:
+    depends_on:
+      curation.postgres:
+        condition: service_healthy
+#      curation.opensearch:
+#        condition: service_healthy
+
+    container_name: agr.stage.curation.api.server
+    image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:production
+    logging:
+      driver: gelf
+      options:
+        gelf-address: 'udp://logs.alliancegenome.org:12201'
+    ports:
+      - "8080:8080"
+    networks:
+      - stage
+    env_file:
+      - .env
+
+  curation.postgres:
+    container_name: agr.stage.curation.postgres.server
+    image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation_data:stage
+    user: postgres
+    logging:
+      driver: gelf
+      options:
+        gelf-address: 'udp://logs.alliancegenome.org:12201'
+    networks:
+      - stage
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  curation.opensearch:
+    container_name: agr.stage.curation.opensearch.server
+    image: opensearchproject/opensearch:1.2.4
+    logging:
+      driver: gelf
+      options:
+        gelf-address: 'udp://logs.alliancegenome.org:12201'
+    networks:
+      - stage
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: true
+
+networks:
+  # The presence of these objects is sufficient to define them
+  stage:
